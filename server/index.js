@@ -9,6 +9,18 @@ const ClassroomModel = require('./models/Classrooms.js');
 const cors = require('cors');
 app.use(cors());
 
+app.use(cors({
+    origin: 'http://192.168.0.4:3000' // 允許的來源
+}));
+
+const corsOptions = {
+    origin: 'http://192.168.0.4:3000',
+    optionsSuccessStatus: 200 // 一些舊版瀏覽器 (IE11, 各種SmartTVs) 對 204 有問題
+  };
+  
+app.use(cors(corsOptions));
+  
+
 app.use(express.json());
 
 mongoose.connect(
@@ -76,6 +88,11 @@ app.get("*", (req, res) => {
 });
 
 
-app.listen(3001, () => {
-    console.log("You are connected!");
+// app.listen(3001, () => {
+//     console.log("You are connected!");
+// });
+
+const port = process.env.PORT || 3001;
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });
