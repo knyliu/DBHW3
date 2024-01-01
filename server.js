@@ -88,6 +88,11 @@ app.get("*", (req, res) => {
 });
 
 
-app.listen(3001, () => {
-    console.log("You are connected!");
+// app.listen(3001, () => {
+//     console.log("You are connected!");
+// });
+
+const port = process.env.PORT || 3001;
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });
