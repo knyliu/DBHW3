@@ -8,7 +8,7 @@ const path = require('path');
 const app = express();
 
 
-const ClassroomModel = require('./models/Classrooms.js');
+// const ClassroomModel = require('./models/Classrooms.js');
 
 app.use(express.json());
 app.use(cors());
