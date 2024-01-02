@@ -1,83 +1,54 @@
-const express = require('express');
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const port = process.env.PORT || 3001;
+const path = require('path');
+
 const app = express();
 
-const mongoose = require('mongoose');
-
-const ClassroomModel = require('./models/Classrooms.js');
-
-
-const cors = require('cors');
+app.use(express.json());
 app.use(cors());
 
-app.use(express.json());
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("Database is connected..."))
+  .catch((err) => console.log(err));
 
-mongoose.connect(
-    "mongodb+srv://41171123h:41171123hpassword@classroommanagement.6k7p0ah.mongodb.net/classroommanagement?retryWrites=true&w=majority",
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true, 
-    }
-);
-
-
-
-
-
-app.post('/addclassroom', async (req,res) => { 
-    const name = req.body.name;
-    const school = req.body.school;
-    const campus = req.body.campus;
-    const building = req.body.building;
-    const floor = req.body.floor;
-    
-    const classroom = new ClassroomModel({name:name , school:school , campus:campus , building:building , floor:floor});
-    await classroom.save();
-    res.send(classroom);
+//db schema
+const userSchema = mongoose.Schema({
+  name: String,
+  lastName: String,
 });
 
-app.get('/read', async (req, res) => {
-    try {
-        const result = await ClassroomModel.find({});
-        res.send(result);
-    } catch (error) {
-        res.status(500).send(error);
-    }
+//db model
+const User = new mongoose.model("User", userSchema);
+
+app.get("/get-users", (req, res) => {
+  User.find()
+    .then((users) => res.json(users))
+    .catch((err) => console.log(err));
 });
 
+app.post("/create", (req, res) => {
+  //save to mongodb and send response
+  const newUser = new User({
+    name: req.body.name,
+    lastName: req.body.lastName,
+  });
 
-app.put('/update', async (req, res) => {
-
-    const newFloor = req.body.newFloor;
-    const id = req.body.id;
-
-    try{
-        await ClassroomModel.findById(id, (error, classroomToUpdate) => { 
-            classroomToUpdate.floor = Number(newFloor);
-            classroomToUpdate.save();
-        });
-    }
-    catch(err){
-        console.log(err)
-    }
-    res.send("updated");
+  newUser
+    .save()
+    .then((user) => res.json(user))
+    .catch((err) => console.log(err));
 });
 
-
-app.delete('/delete/:id', async (req, res) => {
-    const id = req.params.id;
-    await ClassroomModel.findByIdAndRemove(id).exec()
-    res.send("itemdeleted");
-})
-
-
-const port = process.env.PORT || 3001;
 // production script
 app.use(express.static("./client/build"));
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "client", "build", "index.html"))
 });
 
-
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on post ${port}`);
 });
