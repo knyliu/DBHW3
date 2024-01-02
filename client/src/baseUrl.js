@@ -1,3 +1,3 @@
-const baseUrl = "https://dbhw3.azurewebsites.net";
+const baseUrl = "https://customerservicedata.azurewebsites.net";
 
 export default baseUrl;
